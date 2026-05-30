@@ -151,15 +151,15 @@ def read_file(path: str, offset: int = 0, limit: int = 2000) -> str:
 - [x] `src/tools/__init__.py` — auto-import and register all tools
 - [x] Integrate all tools into ReAct loop
 
-### Phase 3 — Safety & Rich CLI
-- [ ] `src/safety/permissions.py` — approval prompts for dangerous tools
-- [ ] Integration: wire permissions into ReAct loop before tool execution
-- [ ] Rich CLI: markdown rendering, streaming spinner, syntax highlighting
-- [ ] Cost tracking per session
+### Phase 3 — Safety & Rich CLI ✅
+- [x] `src/safety/permissions.py` — approval prompts for dangerous tools
+- [x] Integration: wire permissions into ReAct loop before tool execution
+- [x] Rich CLI: markdown rendering, streaming spinner, syntax highlighting
+- [x] Cost tracking per session
 
-### Phase 4 — Advanced Features
-- [ ] `/model` command — switch OpenRouter model mid-session
-- [ ] `/new` command — clear conversation history
+### Phase 4 — Advanced Features ⏳
+- [x] `/model` command — switch OpenRouter model mid-session
+- [x] `/new` command — clear conversation history
 - [ ] Session persistence — save/load JSONL conversation logs
 - [ ] Context compaction — summarize old messages to save tokens
 - [ ] Multi-line input mode

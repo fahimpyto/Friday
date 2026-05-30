@@ -24,6 +24,7 @@ class LLMClient:
             return response
 
         message = response.choices[0].message
+        message.usage = getattr(response, "usage", None)
         return message
 
     def available_models(self):

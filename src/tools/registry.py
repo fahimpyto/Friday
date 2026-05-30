@@ -63,16 +63,25 @@ def generate_schema(func):
     }
 
 
-def tool(func):
+def tool(func=None, *, safety: str = "safe"):
+    if func is None:
+        return lambda f: tool(f, safety=safety)
+
     tools_registry[func.__name__] = {
         "func": func,
         "schema": generate_schema(func),
+        "safety": safety,
     }
     return func
 
 
 def get_tool_schemas() -> list:
     return [entry["schema"] for entry in tools_registry.values()]
+
+
+def get_tool_safety(name: str) -> str:
+    entry = tools_registry.get(name)
+    return entry.get("safety", "safe") if entry else "safe"
 
 
 def execute_tool(name: str, arguments: dict) -> str:

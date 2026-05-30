@@ -4,7 +4,7 @@ import sys
 from src.tools.registry import tool
 
 
-@tool
+@tool(safety="dangerous")
 def execute_command(command: str, timeout: int = 30) -> str:
     """Execute a shell command and return its output.
     :param command: Command to execute

@@ -25,7 +25,7 @@ def read_file(path: str, offset: int = 0, limit: int = 2000) -> str:
     return "".join(selected) or "(empty file)"
 
 
-@tool
+@tool(safety="confirm")
 def write_file(path: str, content: str) -> str:
     """Write content to a file, creating parent directories if needed.
     :param path: Absolute or relative path to the file
@@ -38,7 +38,7 @@ def write_file(path: str, content: str) -> str:
     return f"Written {len(content)} characters to {path}"
 
 
-@tool
+@tool(safety="confirm")
 def edit_file(path: str, old_string: str, new_string: str) -> str:
     """Search and replace text in a file. Shows a diff of changes.
     :param path: Absolute or relative path to the file
