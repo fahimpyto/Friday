@@ -5,19 +5,32 @@ from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.prompt import Prompt
 from rich.table import Table
-from rich.text import Text
-from rich.live import Live
-from rich.spinner import Spinner
 
 from src.llm.client import LLMClient
 from src.agent.core import ReActAgent
 from src.agent.prompt import SYSTEM_PROMPT
+from src.agent import session as session_mgr
 from src.tools.registry import get_tool_schemas
 
 import src.tools
 
 load_dotenv()
 console = Console()
+
+
+def get_multiline_input() -> str:
+    lines = []
+    while True:
+        try:
+            line = input()
+        except (EOFError, KeyboardInterrupt):
+            break
+        if line.endswith("\\"):
+            lines.append(line[:-1])
+        else:
+            lines.append(line)
+            break
+    return "".join(lines)
 
 
 def main():
@@ -34,7 +47,7 @@ def main():
     tool_count = len(get_tool_schemas())
     console.print(Panel(
         f"[bold cyan]Friday v0.1[/]  |  Model: [green]{model}[/]  |  Tools: {tool_count}\n"
-        f"[dim]/new  /model  /cost  /help  |  exit[/]",
+        f"[dim]/new  /model  /cost  /sessions  /load  /help  |  exit  |  use \\ for multi-line[/]",
         title="🤖 Agent",
     ))
 
@@ -51,7 +64,8 @@ def main():
 
     while True:
         try:
-            user_input = Prompt.ask("[bold cyan]You[/]")
+            console.print("[bold cyan]You[/]", end="")
+            user_input = get_multiline_input().strip()
         except (EOFError, KeyboardInterrupt):
             break
 
@@ -82,7 +96,7 @@ def handle_command(cmd: str, agent: ReActAgent, llm: LLMClient):
 
     if command == "/new":
         agent.reset()
-        console.print("[yellow]Conversation reset.[/]")
+        console.print(f"[yellow]New session: {agent.session_id}[/]")
     elif command == "/model":
         if args:
             llm.set_model(args)
@@ -94,15 +108,40 @@ def handle_command(cmd: str, agent: ReActAgent, llm: LLMClient):
                 console.print(f"  /model {m}")
     elif command == "/cost":
         console.print(f"[dim]{agent.get_cost_summary()}[/]")
+    elif command == "/sessions":
+        sessions = session_mgr.list_sessions()
+        if not sessions:
+            console.print("[yellow]No saved sessions.[/]")
+        else:
+            table = Table(title="Sessions")
+            table.add_column("ID", style="cyan")
+            table.add_column("Messages", style="white")
+            table.add_column("Date", style="dim")
+            for s in sessions:
+                msgs = session_mgr.load_messages(s["id"])
+                table.add_row(s["id"], str(len(msgs)), s["modified"])
+            console.print(table)
+    elif command == "/load":
+        if not args:
+            console.print("[red]Usage: /load <session_id>[/]")
+        else:
+            ok = agent.load_session(args)
+            if ok:
+                console.print(f"[green]Loaded session: {args}[/]")
+            else:
+                console.print(f"[red]Session not found: {args}[/]")
     elif command == "/help":
         table = Table(title="Commands")
         table.add_column("Command", style="cyan")
         table.add_column("Description", style="white")
-        table.add_row("/new", "Reset conversation")
+        table.add_row("/new", "Start a new session")
         table.add_row("/model <name>", "Switch model")
         table.add_row("/cost", "Show token usage")
+        table.add_row("/sessions", "List saved sessions")
+        table.add_row("/load <id>", "Load a saved session")
         table.add_row("/help", "Show this help")
         table.add_row("exit", "Quit")
+        table.add_row("\\", "Line continuation for multi-line input")
         console.print(table)
     else:
         console.print(f"[red]Unknown command: {command}[/]")

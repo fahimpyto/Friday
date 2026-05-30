@@ -157,12 +157,12 @@ def read_file(path: str, offset: int = 0, limit: int = 2000) -> str:
 - [x] Rich CLI: markdown rendering, streaming spinner, syntax highlighting
 - [x] Cost tracking per session
 
-### Phase 4 — Advanced Features ⏳
+### Phase 4 — Advanced Features ✅
 - [x] `/model` command — switch OpenRouter model mid-session
 - [x] `/new` command — clear conversation history
-- [ ] Session persistence — save/load JSONL conversation logs
-- [ ] Context compaction — summarize old messages to save tokens
-- [ ] Multi-line input mode
+- [x] Session persistence — save/load JSONL conversation logs
+- [x] Context compaction — summarize old messages to save tokens
+- [x] Multi-line input mode (use `\` at end of line)
 
 ---
 
