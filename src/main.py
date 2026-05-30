@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 from src.llm.client import LLMClient
 from src.agent.core import ReActAgent
 from src.agent.prompt import SYSTEM_PROMPT
+from src.tools.registry import get_tool_schemas
+
+import src.tools  # registers all @tool decorated functions
 
 load_dotenv()
 
@@ -19,7 +22,8 @@ def main():
     llm = LLMClient(api_key=api_key, model=model)
     agent = ReActAgent(llm_client=llm, system_prompt=SYSTEM_PROMPT)
 
-    print(f"Friday v0.1 — Model: {model}")
+    tool_count = len(get_tool_schemas())
+    print(f"Friday v0.1 — Model: {model}  |  Tools: {tool_count}")
     print("Type 'exit' to quit, '/new' to reset, '/model <name>' to switch models")
     print("-" * 50)
 

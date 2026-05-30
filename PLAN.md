@@ -142,14 +142,14 @@ def read_file(path: str, offset: int = 0, limit: int = 2000) -> str:
 - [x] `src/main.py` — Basic CLI: input → stream → output (no rich yet)
 - [x] `requirements.txt` + `.env.example` + `.gitignore`
 
-### Phase 2 — All Tools
-- [ ] `src/tools/filesystem.py` — read, write, edit, list_dir, glob, grep
-- [ ] `src/tools/shell.py` — execute_command with timeout
-- [ ] `src/tools/web.py` — web_search (duckduckgo + tavily) + web_fetch
-- [ ] `src/tools/pdf.py` — read_pdf via PyMuPDF
-- [ ] `src/tools/system.py` — system_info, get_datetime
-- [ ] `src/tools/__init__.py` — auto-import and register all tools
-- [ ] Integrate all tools into ReAct loop
+### Phase 2 — All Tools ✅
+- [x] `src/tools/filesystem.py` — read, write, edit, list_dir, glob, grep
+- [x] `src/tools/shell.py` — execute_command with timeout
+- [x] `src/tools/web.py` — web_search (duckduckgo + tavily) + web_fetch
+- [x] `src/tools/pdf.py` — read_pdf via PyMuPDF
+- [x] `src/tools/system.py` — system_info, get_datetime
+- [x] `src/tools/__init__.py` — auto-import and register all tools
+- [x] Integrate all tools into ReAct loop
 
 ### Phase 3 — Safety & Rich CLI
 - [ ] `src/safety/permissions.py` — approval prompts for dangerous tools
