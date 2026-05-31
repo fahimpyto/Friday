@@ -78,6 +78,8 @@ def _make_serializable(msg) -> dict:
 
 
 def _tc_serializable(tc) -> dict:
+    if isinstance(tc, dict):
+        return tc
     return {
         "id": tc.id,
         "type": tc.type,
