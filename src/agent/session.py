@@ -55,6 +55,13 @@ def delete_session(session_id: str):
 
 
 def _make_serializable(msg) -> dict:
+    # Handle OpenAI ChatCompletionMessage objects manually
+    if hasattr(msg, "role"):
+        result = {"role": msg.role, "content": msg.content}
+        if getattr(msg, "tool_calls", None):
+            result["tool_calls"] = [_tc_serializable(tc) for tc in msg.tool_calls]
+        return result
+    # Fallback for pydantic models
     if hasattr(msg, "model_dump"):
         return msg.model_dump()
     if hasattr(msg, "to_dict"):
