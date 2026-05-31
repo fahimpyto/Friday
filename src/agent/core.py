@@ -4,6 +4,7 @@ from src.llm.client import LLMClient
 from src.tools.registry import get_tool_schemas, get_tool_safety, execute_tool
 from src.safety.permissions import require_approval
 from src.agent import session
+from src.agent.session import _make_serializable
 
 
 class ReActAgent:
@@ -34,8 +35,9 @@ class ReActAgent:
 
         for _ in range(self.max_iterations):
             response = self.llm.chat(self.messages, tools=get_tool_schemas(), stream=False)
-            self.messages.append(response)
-            self._defer_save(response)
+            response_dict = _make_serializable(response)
+            self.messages.append(response_dict)
+            self._defer_save(response_dict)
 
             if response.usage:
                 self.total_input_tokens += response.usage.prompt_tokens or 0

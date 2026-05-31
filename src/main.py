@@ -64,7 +64,7 @@ def main():
 
     while True:
         try:
-            console.print("[bold cyan]You[/]", end="")
+            console.print("[bold cyan]You:[/] ", end="")
             user_input = get_multiline_input().strip()
         except (EOFError, KeyboardInterrupt):
             break
@@ -82,8 +82,8 @@ def main():
         with console.status("[bold green]Friday is thinking...", spinner="dots"):
             response = agent.run(user_input)
 
-        md = Markdown(response)
-        console.print(Panel(md, title="[bold green]Friday[/]", border_style="green"))
+        console.print(f"\n[bold green]Friday:[/]")
+        console.print(Markdown(response))
 
     cost = agent.get_cost_summary()
     console.print(f"\n[dim]Session ended. {cost}[/]")
