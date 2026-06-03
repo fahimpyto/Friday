@@ -1,5 +1,9 @@
+import sys
+from pathlib import Path
 import os
 from dotenv import load_dotenv
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
@@ -48,7 +52,7 @@ def main():
     console.print(Panel(
         f"[bold cyan]Friday v0.1[/]  |  Model: [green]{model}[/]  |  Tools: {tool_count}\n"
         f"[dim]/new  /model  /cost  /sessions  /load  /help  |  exit  |  use \\ for multi-line[/]",
-        title="🤖 Agent",
+        title="Agent",
     ))
 
     def on_tool_call(name, arguments, safety):
