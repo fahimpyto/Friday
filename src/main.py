@@ -37,7 +37,28 @@ def get_multiline_input() -> str:
     return "".join(lines)
 
 
+def run_setup(auto_install: bool = False):
+    """Check and optionally install missing dependencies."""
+    from src.tools.dependencies import ensure_all
+
+    console.print("[bold cyan]Checking system dependencies...[/]")
+    missing = ensure_all(verbose=True, auto_install=auto_install)
+
+    if not missing:
+        console.print("[bold green]All dependencies satisfied![/]")
+    else:
+        console.print(f"[bold yellow]Still missing: {', '.join(missing)}[/]")
+        console.print("[yellow]Run again with --setup --auto for unattended install[/]")
+
+
 def main():
+    # Handle CLI flags
+    if "--setup" in sys.argv:
+        auto = "--auto" in sys.argv
+        run_setup(auto_install=auto)
+        if not auto:
+            return
+
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
         console.print("[red]Error: OPENROUTER_API_KEY not set. Create a .env file based on .env.example[/]")
@@ -51,7 +72,7 @@ def main():
     tool_count = len(get_tool_schemas())
     console.print(Panel(
         f"[bold cyan]Friday v0.1[/]  |  Model: [green]{model}[/]  |  Tools: {tool_count}\n"
-        f"[dim]/new  /model  /cost  /sessions  /load  /help  |  exit  |  use \\ for multi-line[/]",
+        f"[dim]/new  /model  /cost  /sessions  /load  /help  /setup  |  exit  |  use \\ for multi-line[/]",
         title="Agent",
     ))
 
@@ -134,6 +155,9 @@ def handle_command(cmd: str, agent: ReActAgent, llm: LLMClient):
                 console.print(f"[green]Loaded session: {args}[/]")
             else:
                 console.print(f"[red]Session not found: {args}[/]")
+    elif command == "/setup":
+        auto = args.strip().lower() == "--auto"
+        run_setup(auto_install=auto)
     elif command == "/help":
         table = Table(title="Commands")
         table.add_column("Command", style="cyan")
@@ -143,6 +167,7 @@ def handle_command(cmd: str, agent: ReActAgent, llm: LLMClient):
         table.add_row("/cost", "Show token usage")
         table.add_row("/sessions", "List saved sessions")
         table.add_row("/load <id>", "Load a saved session")
+        table.add_row("/setup [--auto]", "Check/install missing dependencies")
         table.add_row("/help", "Show this help")
         table.add_row("exit", "Quit")
         table.add_row("\\", "Line continuation for multi-line input")

@@ -8,3 +8,9 @@ build/
 .venv/
 venv/
 sessions/
+tools/bin/
+pdf_*.txt
+my-pdf.pdf
+
+# Temp OCR test outputs
+pdf_output*.txt

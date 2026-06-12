@@ -52,14 +52,26 @@ if (-not (Test-Path -LiteralPath ".env")) {
     Write-Host "[OK] .env already exists" -ForegroundColor Green
 }
 
+# --- Poppler check ---
+$pdftoppm = (Get-Command pdftoppm -ErrorAction SilentlyContinue).Source
+$localPoppler = Test-Path -LiteralPath "tools\bin\poppler\Library\bin\pdftoppm.exe"
+if ($pdftoppm -or $localPoppler) {
+    Write-Host "[OK] Poppler found" -ForegroundColor Green
+} else {
+    Write-Host "[WARN] Poppler not found. OCR for scanned PDFs will not work." -ForegroundColor Yellow
+    Write-Host "       Run: python src\main.py --setup --auto" -ForegroundColor Yellow
+    Write-Host "       Or download from: https://github.com/oschwartz10612/poppler-windows/releases" -ForegroundColor Yellow
+}
+
 # --- Tesseract check ---
 $tesseract = (Get-Command tesseract -ErrorAction SilentlyContinue).Source
 if ($tesseract) {
     Write-Host "[OK] Tesseract OCR found: $((& $tesseract --version 2>&1 | Select-Object -First 1).Trim())" -ForegroundColor Green
 } else {
     Write-Host "[WARN] Tesseract OCR not found. Scanned PDFs will not work." -ForegroundColor Yellow
-    Write-Host "       Download from: https://github.com/UB-Mannheim/tesseract/wiki" -ForegroundColor Yellow
-    Write-Host "       Or install via Chocolatey: choco install tesseract" -ForegroundColor Yellow
+    Write-Host "       Run: python src\main.py --setup --auto" -ForegroundColor Yellow
+    Write-Host "       Or install via: winget install UB-Mannheim.TesseractOCR" -ForegroundColor Yellow
+    Write-Host "       Or download from: https://github.com/UB-Mannheim/tesseract/wiki" -ForegroundColor Yellow
 }
 
 Write-Host ""
