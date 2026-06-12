@@ -1,0 +1,65 @@
+{
+  "default": "openai/gpt-4o",
+  "models": [
+    {
+      "id": "openai/gpt-4o",
+      "name": "GPT-4o",
+      "provider": "OpenAI",
+      "type": "paid"
+    },
+    {
+      "id": "openai/gpt-4o-mini",
+      "name": "GPT-4o Mini",
+      "provider": "OpenAI",
+      "type": "paid"
+    },
+    {
+      "id": "anthropic/claude-sonnet-4",
+      "name": "Claude Sonnet 4",
+      "provider": "Anthropic",
+      "type": "paid"
+    },
+    {
+      "id": "anthropic/claude-3.5-haiku",
+      "name": "Claude 3.5 Haiku",
+      "provider": "Anthropic",
+      "type": "paid"
+    },
+    {
+      "id": "google/gemini-2.0-flash-exp:free",
+      "name": "Gemini 2.0 Flash",
+      "provider": "Google",
+      "type": "free"
+    },
+    {
+      "id": "meta-llama/llama-4",
+      "name": "Llama 4",
+      "provider": "Meta",
+      "type": "free"
+    },
+    {
+      "id": "deepseek/deepseek-chat",
+      "name": "DeepSeek Chat",
+      "provider": "DeepSeek",
+      "type": "free"
+    },
+    {
+      "id": "qwen/qwen-max",
+      "name": "Qwen Max",
+      "provider": "Qwen",
+      "type": "free"
+    },
+    {
+      "id": "qwen/qwen3-coder:free",
+      "name": "Qwen3 Coder",
+      "provider": "Qwen",
+      "type": "free"
+    },
+    {
+      "id": "mistralai/mistral-large",
+      "name": "Mistral Large",
+      "provider": "Mistral",
+      "type": "free"
+    }
+  ]
+}

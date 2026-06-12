@@ -15,6 +15,7 @@ from src.agent.core import ReActAgent
 from src.agent.prompt import SYSTEM_PROMPT
 from src.agent import session as session_mgr
 from src.tools.registry import get_tool_schemas
+from src.models.registry import list_models, get_model, get_model_by_id, remove_model, set_default, get_default
 
 import src.tools
 
@@ -64,7 +65,7 @@ def main():
         console.print("[red]Error: OPENROUTER_API_KEY not set. Create a .env file based on .env.example[/]")
         return
 
-    model = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o")
+    model = get_default()
 
     llm = LLMClient(api_key=api_key, model=model)
     agent = ReActAgent(llm_client=llm, system_prompt=SYSTEM_PROMPT)
@@ -124,13 +125,76 @@ def handle_command(cmd: str, agent: ReActAgent, llm: LLMClient):
         console.print(f"[yellow]New session: {agent.session_id}[/]")
     elif command == "/model":
         if args:
-            llm.set_model(args)
-            console.print(f"[green]Model switched to:[/] {args}")
+            parts = args.split(maxsplit=1)
+            sub = parts[0].lower()
+            rest = parts[1] if len(parts) > 1 else ""
+
+            if sub == "delete" and rest:
+                target_id = None
+                target_name = None
+                if rest.isdigit():
+                    idx = int(rest) - 1
+                    m = get_model(idx)
+                    if m:
+                        target_id = m["id"]
+                        target_name = m["name"]
+                    else:
+                        console.print(f"[red]Invalid model number: {rest}[/]")
+                else:
+                    target_id = rest
+                    m = get_model_by_id(rest)
+                    target_name = m["name"] if m else rest
+
+                if target_id:
+                    changed = llm.model == target_id
+                    if remove_model(target_id):
+                        console.print(f"[green]✓ Removed:[/] {target_name}")
+                        if changed:
+                            fallback_id = get_default()
+                            llm.set_model(fallback_id)
+                            console.print(f"[yellow]Switched to default:[/] {fallback_id}")
+                    else:
+                        console.print(f"[red]Not found:[/] {target_name}")
+            else:
+                selected = None
+                if args.isdigit():
+                    idx = int(args) - 1
+                    m = get_model(idx)
+                    if m:
+                        selected = m["id"]
+                    else:
+                        console.print(f"[red]Invalid model number: {args}[/]")
+                else:
+                    m = get_model_by_id(args)
+                    if m:
+                        selected = m["id"]
+                    else:
+                        selected = args
+
+                if selected:
+                    llm.set_model(selected)
+                    set_default(selected)
+                    console.print(f"[green]✓ Switched to:[/] {selected} [dim](saved as default)[/]")
         else:
-            console.print(f"Current model: [green]{llm.model}[/]")
-            console.print("[dim]Available examples:[/]")
-            for m in llm.available_models():
-                console.print(f"  /model {m}")
+            table = Table(title=f"Models  |  Current: [green]{llm.model}[/]")
+            table.add_column("#", style="cyan", no_wrap=True)
+            table.add_column("Model", style="white")
+            table.add_column("ID", style="dim")
+            table.add_column("Provider", style="blue")
+            table.add_column("Type", style="yellow")
+
+            for i, m in enumerate(list_models(), 1):
+                marker = " ◀" if m["id"] == llm.model else ""
+                type_tag = "[bold green]FREE[/]" if m["type"] == "free" else "[bold red]PAID[/]"
+                table.add_row(
+                    str(i),
+                    f"{m['name']}{marker}",
+                    m["id"],
+                    m["provider"],
+                    type_tag,
+                )
+            console.print(table)
+            console.print("[dim]Use /model <number> to switch, /model <id>, or /model delete <number|id>[/]")
     elif command == "/cost":
         console.print(f"[dim]{agent.get_cost_summary()}[/]")
     elif command == "/sessions":

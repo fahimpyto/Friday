@@ -1,5 +1,7 @@
 from openai import OpenAI
 
+from src.models.registry import get_model_ids
+
 
 class LLMClient:
     def __init__(self, api_key: str, model: str = "openai/gpt-4o", base_url: str = "https://openrouter.ai/api/v1"):
@@ -28,14 +30,4 @@ class LLMClient:
         return message
 
     def available_models(self):
-        return [
-            "openai/gpt-4o",
-            "openai/gpt-4o-mini",
-            "anthropic/claude-sonnet-4",
-            "anthropic/claude-3.5-haiku",
-            "google/gemini-2.0-flash",
-            "meta-llama/llama-4",
-            "deepseek/deepseek-chat",
-            "qwen/qwen-max",
-            "mistralai/mistral-large",
-        ]
+        return get_model_ids()
