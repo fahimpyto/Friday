@@ -24,11 +24,13 @@ def _save(data: dict):
 
 def get_default() -> str:
     data = _load()
-    default_id = data.get("default", "openai/gpt-4o")
+    saved = data.get("default")
+    if saved:
+        return saved
     env_model = os.getenv("OPENROUTER_MODEL")
     if env_model:
         return env_model
-    return default_id
+    return "openai/gpt-4o"
 
 
 def set_default(model_id: str):
@@ -59,6 +61,33 @@ def get_model_by_id(model_id: str) -> dict | None:
 
 def get_model_ids() -> list[str]:
     return [m["id"] for m in list_models()]
+
+
+def _infer_name(model_id: str) -> str:
+    raw = model_id.split("/")[-1]
+    raw = raw.replace(":free", "").replace(":paid", "")
+    return raw.replace("-", " ").replace("_", " ").title()
+
+
+def _infer_provider(model_id: str) -> str:
+    parts = model_id.split("/")
+    return parts[0].title() if len(parts) > 1 else "Unknown"
+
+
+def add_model(model_id: str) -> dict:
+    data = _load()
+    existing = get_model_by_id(model_id)
+    if existing:
+        return existing
+    entry = {
+        "id": model_id,
+        "name": _infer_name(model_id),
+        "provider": _infer_provider(model_id),
+        "type": "free",
+    }
+    data["models"].append(entry)
+    _save(data)
+    return entry
 
 
 def remove_model(model_id: str) -> bool:

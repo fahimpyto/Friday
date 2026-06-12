@@ -15,7 +15,7 @@ from src.agent.core import ReActAgent
 from src.agent.prompt import SYSTEM_PROMPT
 from src.agent import session as session_mgr
 from src.tools.registry import get_tool_schemas
-from src.models.registry import list_models, get_model, get_model_by_id, remove_model, set_default, get_default
+from src.models.registry import list_models, get_model, get_model_by_id, remove_model, set_default, get_default, add_model
 
 import src.tools
 
@@ -169,7 +169,9 @@ def handle_command(cmd: str, agent: ReActAgent, llm: LLMClient):
                     if m:
                         selected = m["id"]
                     else:
-                        selected = args
+                        entry = add_model(args)
+                        selected = entry["id"]
+                        console.print(f"[green]✓ Added:[/] {entry['name']} [dim]({entry['id']})[/]")
 
                 if selected:
                     llm.set_model(selected)

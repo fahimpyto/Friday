@@ -1,5 +1,5 @@
 {
-  "default": "openai/gpt-4o",
+  "default": "google/gemma-4-26b-a4b-it:free",
   "models": [
     {
       "id": "openai/gpt-4o",
