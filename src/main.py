@@ -178,24 +178,29 @@ def handle_command(cmd: str, agent: ReActAgent, llm: LLMClient):
                     set_default(selected)
                     console.print(f"[green]✓ Switched to:[/] {selected} [dim](saved as default)[/]")
         else:
-            table = Table(title=f"Models  |  Current: [green]{llm.model}[/]")
-            table.add_column("#", style="cyan", no_wrap=True)
-            table.add_column("Model", style="white")
-            table.add_column("ID", style="dim")
-            table.add_column("Provider", style="blue")
-            table.add_column("Type", style="yellow")
+            models = list_models()
+            if not models:
+                console.print("[yellow]No models yet. Use /model <id> to add one.[/]")
+                console.print(f"[dim]Current: [green]{llm.model}[/][/]")
+            else:
+                table = Table(title=f"Models  |  Current: [green]{llm.model}[/]")
+                table.add_column("#", style="cyan", no_wrap=True)
+                table.add_column("Model", style="white")
+                table.add_column("ID", style="dim")
+                table.add_column("Provider", style="blue")
+                table.add_column("Type", style="yellow")
 
-            for i, m in enumerate(list_models(), 1):
-                marker = " ◀" if m["id"] == llm.model else ""
-                type_tag = "[bold green]FREE[/]" if m["type"] == "free" else "[bold red]PAID[/]"
-                table.add_row(
-                    str(i),
-                    f"{m['name']}{marker}",
-                    m["id"],
-                    m["provider"],
-                    type_tag,
-                )
-            console.print(table)
+                for i, m in enumerate(models, 1):
+                    marker = " ◀" if m["id"] == llm.model else ""
+                    type_tag = "[bold green]FREE[/]" if m["type"] == "free" else "[bold red]PAID[/]"
+                    table.add_row(
+                        str(i),
+                        f"{m['name']}{marker}",
+                        m["id"],
+                        m["provider"],
+                        type_tag,
+                    )
+                console.print(table)
             console.print("[dim]Use /model <number> to switch, /model <id>, or /model delete <number|id>[/]")
     elif command == "/cost":
         console.print(f"[dim]{agent.get_cost_summary()}[/]")
